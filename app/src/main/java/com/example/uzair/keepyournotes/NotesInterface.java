@@ -8,4 +8,6 @@ import android.view.View;
 
 public interface NotesInterface {
     public void itemClicked(View view);
+    public void itemlongClicked(View view);
+
 }

@@ -38,6 +38,13 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<CustomArrayAdapter.
                 notesInterface.itemClicked(v);
             }
         });
+        v.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                notesInterface.itemlongClicked(v);
+                return false;
+            }
+        });
         return holder;
     }
 
@@ -59,6 +66,11 @@ public class CustomArrayAdapter extends RecyclerView.Adapter<CustomArrayAdapter.
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    public void refresh(ArrayList<NotesModel> notes) {
+        data = notes;
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

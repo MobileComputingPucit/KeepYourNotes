@@ -7,18 +7,32 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
+
 public class MainActivity extends AppCompatActivity implements NotesInterface {
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (arrayAdapter != null)
+        {
+            getAllValues();
+            arrayAdapter.refresh(notes);
+        }
+    }
 
     private CustomArrayAdapter arrayAdapter;
     RecyclerView recyclerView;
@@ -38,7 +52,9 @@ public class MainActivity extends AppCompatActivity implements NotesInterface {
         getAllValues();
 
         arrayAdapter = new CustomArrayAdapter(this,notes,this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(arrayAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -50,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements NotesInterface {
                 startActivity(intent);
             }
         });
-
 
 //        recyclerView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 //            @Override
@@ -94,13 +109,31 @@ public class MainActivity extends AppCompatActivity implements NotesInterface {
 
     @Override
     public void itemClicked(View view) {
+        int itemPosition = recyclerView.getChildLayoutPosition(view);
         Intent intent  = new Intent(getApplicationContext(),EditNotes.class);
         intent.putExtra("notes",true);
+        intent.putExtra("id",notes.get(itemPosition).getId());
 
         startActivity(intent);
     }
-//
-//    public static Mydatabase getdatabase (){
-//        return his.myBase;
-//    }
+
+    @Override
+    public void itemlongClicked(View view) {
+        final int itemPosition = recyclerView.getChildLayoutPosition(view);
+
+        new AlertDialog.Builder(MainActivity.this)
+                        .setIcon(android.R.drawable.alert_light_frame)
+                        .setMessage("This Item will be permanently delete")
+                        .setTitle("ARE YOU SURE!!!")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialogInterface,int i) {
+                                myBase.deleteProduct(notes.get(itemPosition).getName());
+
+                            }
+                        })
+                        .setNegativeButton("No",null)
+                        .show();
+    }
 }
